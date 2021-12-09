@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weng.quick_blog.mapper.operation.TagMapper">
+    <delete id="deleteTagLink">
+        delete from tag_link where link_id=#{linkId} and type=#{type}
+    </delete>
+
+    <select id="listByLinkId" resultType="com.weng.quick_blog.entity.operation.Tag">
+       select tag.* from tag left join tag_link on tag.id = tag_link.tag_id
+        <where>
+            <if test="linkId!=null">
+                and tag_link.link_id=#{linkId}
+            </if>
+            <if test="type!=null">
+                and tag_link.type = #{type}
+            </if>
+        </where>
+    </select>
+    <select id="listTagVo" resultType="com.weng.quick_blog.entity.operation.vo.TagVO">
+        select t.name ,sum(t.num) as linkNum from (
+        select distinct t.type, t.name, (select count(*) from tag_link tl2 where tl2.tag_id = t.id) as num
+        from tag t
+        left join tag_link tl on t.id = tl.tag_id and t.type = tl.type) t
+        group by t.name
+    </select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weng.quick_blog.mapper.operation.RecommendMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, link_id, type, order_num, title, top
+    </sql>
+
+    <update id="otherDecomeTop">
+        update recommend set top = 0 where id!=#{id}
+    </update>
+    <update id="becomeTop">
+        update recommend set top = 1 where id=#{id}
+    </update>
+
+    <select id="listSelect" resultType="com.weng.quick_blog.entity.operation.vo.RecommendVO">
+
+    </select>
+    <select id="listRecommendVO" resultType="com.weng.quick_blog.entity.operation.vo.RecommendVO">
+        select <include refid="Base_Column_List"/> from recommend order by top desc,order_num desc limit 5
+    </select>
+    <select id="listHotRead" resultType="com.weng.quick_blog.entity.operation.Recommend">
+
+    </select>
+</mapper>

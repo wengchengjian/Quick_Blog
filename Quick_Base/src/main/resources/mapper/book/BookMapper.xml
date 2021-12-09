@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weng.quick_blog.mapper.book.BookMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.weng.quick_blog.entity.book.Book">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="cover" property="cover" />
+        <result column="author" property="author" />
+        <result column="category_id" property="categoryId" />
+        <result column="recommend" property="recommend" />
+        <result column="publisher" property="publisher" />
+        <result column="publish_date" property="publishDate" />
+        <result column="page_num" property="pageNum" />
+        <result column="grade" property="grade" />
+        <result column="description" property="description" />
+        <result column="catalogue" property="catalogue" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="read_num" property="readNum" />
+        <result column="like_num" property="likeNum" />
+        <result column="publish" property="publish" />
+        <result column="progress" property="progress" />
+        <result column="reading" property="reading" />
+    </resultMap>
+
+    <resultMap id="WithSubList" extends="BaseResultMap" type="com.weng.quick_blog.entity.book.vo.BookVO">
+        <association property="tagList" column="{linkId=id,type=type}" select="com.weng.quick_blog.mapper.operation.TagMapper.listByLinkId"/>
+        <association property="bookNoteList" column="id" select="com.weng.quick_blog.mapper.book.BookNoteMapper.listSimpleBookNoteByBookId"/>
+        <association property="bookSense" column="{bookId=id}" select="com.weng.quick_blog.mapper.book.BookSenseMapper.selectOne"/>
+    </resultMap>
+
+    <resultMap id="WithTagList" extends="BaseResultMap" type="com.weng.quick_blog.entity.book.vo.BookVO">
+        <association property="tagList" column="{linkId=id,type=type}" select="com.weng.quick_blog.mapper.operation.TagMapper.listByLinkId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, title, cover, author, category_id, recommend, publisher, publish_date, page_num, grade, description, catalogue, create_time, update_time, read_num, like_num, publish, progress, reading
+    </sql>
+
+
+    <update id="addReadNum">
+        update book set read_num = read_num + #{num} where id=#{bookId}
+    </update>
+    <update id="addLikeNum">
+        update book set like_num = like_num + #{num} where id=#{bookId}
+    </update>
+
+    <select id="listBook" resultType="com.weng.quick_blog.entity.book.Book">
+        select * from book
+        <where>
+            <if test="title!=null and title!=''">
+                and title = #{title}
+            </if>
+            <if test="recommend!=null">
+                and recommend = #{recommend},
+            </if>
+        </where>
+        <if test="favorite!=null">
+            order by like_num desc,
+        </if>
+
+        <if test="grade!=null">
+            order by grade desc,
+        </if>
+        order by update_time desc
+    </select>
+    <select id="queryPageCondition" resultMap="WithSubList">
+        select <include refid="Base_Column_List" />,1 as `type` from book
+        <where>
+            <if test="title!=null and title!=''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                and find_in_set(#{categoryId},category_id)
+            </if>
+            <if test="recommend!=null and recommend==true">
+                and recommend = true
+            </if>
+            and publish = true
+        </where>
+        order by reading desc
+        <if test="recommend !=null and recommend==true">
+            , recommend desc
+        </if>
+        <if test="latest !=null and latest == true">
+            ,create_time desc
+        </if>
+        <if test="favorite !=null and favorite== true">
+            ,like_num desc
+        </if>
+
+
+
+    </select>
+    <select id="checkByCategory" resultType="java.lang.Integer">
+        select count(*) from book where category_id like concat('%',#{categoryId},'%')
+    </select>
+    <select id="selectByIdWithSubList" resultMap="WithSubList">
+        select <include refid="Base_Column_List" />, 1 as `type` from book where id=#{id}
+    </select>
+</mapper>
