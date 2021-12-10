@@ -7,8 +7,8 @@ package com.weng.quick_blog.admin.book;
 import com.weng.quick_blog.Result;
 import com.weng.quick_blog.entity.book.BookSense;
 import com.weng.quick_blog.service.book.BookSenseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
  * @author wengchengjian
  * @version BookSenseController:BookSenseController.java v1.0 2021/12/6 4:30 下午 wengchengjian Exp $
  */
+@Slf4j
 @RestController
 @RequestMapping("/admin/book/sense")
-@PreAuthorize("hasRole('admin')")
 public class BookSenseController {
     @Autowired
     private BookSenseService bookSenseService;
@@ -34,13 +34,13 @@ public class BookSenseController {
     public Result save(@RequestBody BookSense bookSense){
         //TODO 参数验证
         bookSenseService.save(bookSense);
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @PutMapping("/update")
     public Result update(@RequestBody BookSense bookSense){
         //TODO 参数验证
         bookSenseService.updateById(bookSense);
-        return Result.Success(null);
+        return Result.Success();
     }
 }

@@ -7,7 +7,6 @@ package com.weng.quick_blog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weng.quick_blog.common.enums.ErrorEnum;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import java.io.PrintWriter;
  * @version result:Result.java v1.0 2021/12/1 4:16 下午 wengchengjian Exp $
  */
 @Data
-@NoArgsConstructor
 public class Result<T> {
     private Integer code;
 
@@ -29,6 +27,9 @@ public class Result<T> {
 
     private T data;
 
+    public Result(){
+        this(null);
+    }
     public Result(T data){
         this(0,"success");
         this.data = data;
@@ -40,9 +41,15 @@ public class Result<T> {
     public static <T> Result<T> Success(T data){
         return new Result(data);
     }
+    public static Result Success(){
+        return new Result();
+    }
 
     public static Result Failure(){
         return new Result(-1,"error");
+    }
+    public static Result Failure(String message){
+        return new Result(-1,message);
     }
 
     public static Result Failure(ErrorEnum errorEnum){

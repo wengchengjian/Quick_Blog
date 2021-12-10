@@ -43,6 +43,7 @@ public class SysMenu implements Serializable {
     @ApiModelProperty(value = "类型   0：目录   1：菜单 ")
     private Integer type;
 
+
     /**
      * 父菜单名称
      */

@@ -21,10 +21,9 @@ public interface SysMenuService extends IService<SysMenu> {
 
     /**
      * 获取用户的所有菜单
-     * @param userId
      * @return
      */
-    List<SysMenu> listUserMenu(Integer userId);
+    List<SysMenu> listUserMenu();
 
     /**
      * 根据父菜单，查询子菜单
@@ -41,22 +40,27 @@ public interface SysMenuService extends IService<SysMenu> {
      */
     List<SysMenu> queryListParentId(Integer parentId);
 
-    /**
-     * 获取不包含按钮的菜单列表
-     * @return
-     */
-    List<SysMenu> queryNotButtonList();
 
-    /**
-     * 获取用户菜单列表
-     * @param userId
-     * @return
-     */
-    List<SysMenu> getUserMenuList(Integer userId);
 
     /**
      * 删除
      * @param menuId
      */
     void delete(Integer menuId);
+
+    /**
+     * 查询是否有子菜单
+     * @param id
+     * @return
+     */
+    Boolean hasChildrenMenu(Integer id);
+
+    /**
+     * 简单逻辑 - 根据ids列表查询菜单
+     * @param menuIds
+     * @return
+     */
+    List<SysMenu> queryListByBatchIds(List<Integer> menuIds);
+
+    List<SysMenu> queryAllMenuByPath(Integer menuId);
 }

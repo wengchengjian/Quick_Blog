@@ -70,7 +70,7 @@ public class CategoryController {
 
         verifyCategory(category);
         categoryService.save(category);
-        return Result.Success(null);
+        return Result.Success();
     }
 
     private void verifyCategory(Category category) throws Exception {

@@ -5,8 +5,10 @@
 package com.weng.quick_blog.service.sys;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.weng.quick_blog.entity.sys.SysMenu;
 import com.weng.quick_blog.entity.sys.SysPerm;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,4 +25,6 @@ public interface SysPermService extends IService<SysPerm> {
      * @return
      */
     List<SysPerm> queryAllPerms(Integer permId);
+
+    List<SysMenu> queryMenuByPerm(Collection<? extends SysPerm> perms);
 }

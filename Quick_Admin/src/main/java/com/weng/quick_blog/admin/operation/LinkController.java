@@ -53,7 +53,7 @@ public class LinkController {
 
         linkService.save(link);
 
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @PutMapping("/update")
@@ -63,7 +63,7 @@ public class LinkController {
 
         linkService.updateById(link);
 
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @DeleteMapping("/delete")
@@ -72,7 +72,7 @@ public class LinkController {
 
         linkService.removeByIds(Arrays.asList(ids));
 
-        return Result.Success(null);
+        return Result.Success();
     }
 
 }

@@ -10,6 +10,7 @@ import com.weng.quick_blog.entity.book.Book;
 import com.weng.quick_blog.entity.book.dto.BookDTO;
 import com.weng.quick_blog.entity.book.vo.BookVO;
 import com.weng.quick_blog.service.book.BookService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,9 @@ import java.util.List;
  * @author wengchengjian
  * @version bookController:BookController.java v1.0 2021/12/6 4:29 下午 wengchengjian Exp $
  */
+@Slf4j
 @RestController
 @RequestMapping("/admin/book")
-@PreAuthorize("hasRole('admin')")
 public class BookController {
 
     @Autowired
@@ -67,7 +68,7 @@ public class BookController {
     public Result save(@RequestBody BookDTO book){
         //TODO 参数验证
         bookService.saveBook(book);
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @PutMapping("/update")
@@ -75,14 +76,14 @@ public class BookController {
     public Result update(@RequestBody BookDTO book){
         //TODO 参数验证
         bookService.updateBook(book);
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @PutMapping("/update/status")
     @PreAuthorize("hasPermission('/read/book/update','book:update')")
     public Result updateStatus(@RequestBody Book readBook){
         bookService.updateById(readBook);
-        return Result.Success(null);
+        return Result.Success();
     }
 
     @DeleteMapping("/delete")
@@ -90,7 +91,7 @@ public class BookController {
     public Result delete(@RequestBody Integer[] ids){
         bookService.deleteBatch(ids);
 
-        return Result.Success(null);
+        return Result.Success();
     }
 
 }

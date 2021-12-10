@@ -33,4 +33,6 @@ public class SysPerm implements Serializable {
     @TableField("parent_id")
     private Integer parentId;
 
+    private Integer menuId;
+
 }

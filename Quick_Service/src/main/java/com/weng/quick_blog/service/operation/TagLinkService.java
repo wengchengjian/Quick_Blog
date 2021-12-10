@@ -14,5 +14,6 @@ import com.weng.quick_blog.entity.operation.TagLink;
  * @author wengchengjian
  * @version TagLinkService:TagLinkService.java v1.0 2021/12/2 2:52 下午 wengchengjian Exp $
  */
+
 public interface TagLinkService extends IService<TagLink> {
 }

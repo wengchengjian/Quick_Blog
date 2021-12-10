@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -22,6 +23,7 @@ import java.io.Serializable;
 @Data
 @TableName("tag_link")
 @ApiModel(value = "TagLink对象",description = "标签多对多维护表")
+@NoArgsConstructor
 public class TagLink implements Serializable {
     private static final long serialVersionUID =1L;
 

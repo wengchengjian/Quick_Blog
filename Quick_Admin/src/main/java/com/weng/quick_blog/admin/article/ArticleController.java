@@ -11,6 +11,7 @@ import com.weng.quick_blog.entity.article.vo.ArticleDTO;
 import com.weng.quick_blog.entity.article.vo.ArticleVO;
 import com.weng.quick_blog.service.article.ArticleService;
 import com.weng.quick_blog.service.operation.RecommendService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +24,9 @@ import javax.annotation.Resource;
  * @author wengchengjian
  * @version ArticleController:ArticleController.java v1.0 2021/12/2 5:57 下午 wengchengjian Exp $
  */
+@Slf4j
 @RestController
 @RequestMapping("/admin/article")
-@PreAuthorize("hasRole('admin')")
 public class ArticleController {
     @Resource
     private ArticleService articleService;
