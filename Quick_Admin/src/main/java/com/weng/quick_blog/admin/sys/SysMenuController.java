@@ -8,11 +8,10 @@ import com.weng.quick_blog.Result;
 import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysMenu;
 import com.weng.quick_blog.service.sys.SysMenuService;
+import com.weng.quick_blog.service.sys.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +27,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/sys/menu")
 public class SysMenuController {
+
+    @Autowired
+    private SysUserService sysUserService;
 
     @Autowired
     private SysMenuService sysMenuService;
@@ -77,8 +79,7 @@ public class SysMenuController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasPermission('/sys/menu/delete','sys:menu:delete')")
     public Result delete(@RequestBody Integer[] ids){
-        SecurityContext context = SecurityContextHolder.getContext();
-        SafeUserDetails user = (SafeUserDetails) context.getAuthentication().getPrincipal();
+        SafeUserDetails user = sysUserService.getCurrentUser();
 
         for(Integer id: ids){
             Boolean has = sysMenuService.hasChildrenMenu(id);

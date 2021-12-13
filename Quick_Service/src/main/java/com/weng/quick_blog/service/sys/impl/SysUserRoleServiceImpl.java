@@ -83,4 +83,9 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     public List<Integer> queryRoleIdList(Integer userId) {
         return baseMapper.queryRoleIdList(userId);
     }
+
+    @Override
+    public List<Integer> queryUserIdList(Integer roleId) {
+        return baseMapper.queryUserIdList(roleId);
+    }
 }

@@ -23,4 +23,14 @@ public interface SysRolePermService extends IService<SysRolePerm> {
      * @return
      */
     List<Integer> queryAllPermsIdsByRoleId(Integer roleId);
+
+    /**
+     * 批量删除权限和角色的关联
+     */
+    void delteBatchByRoleId(List<Integer> roleIds);
+
+    /**
+     * 删除权限和角色的关联
+     */
+    void delteByRoleId(Integer roleId);
 }

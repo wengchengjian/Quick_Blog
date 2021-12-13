@@ -18,7 +18,7 @@ import lombok.Data;
 public class GlobalException extends RuntimeException{
     private String msg;
 
-    private Integer code = 500;
+    private Integer code;
 
     public GlobalException(){
         super(ErrorEnum.UNKOWN.getMsg());
@@ -38,6 +38,7 @@ public class GlobalException extends RuntimeException{
 
     public GlobalException(String msg){
         this.msg = msg;
+        this.code = -1;
     }
 
 }

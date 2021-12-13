@@ -5,6 +5,7 @@
 package com.weng.quick_blog.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.weng.quick_blog.entity.sys.SysMenu;
 import com.weng.quick_blog.entity.sys.SysPerm;
@@ -56,5 +57,11 @@ public class SysPermServiceImpl extends ServiceImpl<SysPermMapper, SysPerm> impl
             res.addAll(menu);
         });
         return res;
+    }
+
+    @Override
+    public SysPerm findByName(String perm) {
+        return baseMapper.selectOne(new QueryWrapper<SysPerm>().lambda().
+                eq(StringUtils.isNotEmpty(perm),SysPerm::getName,perm));
     }
 }

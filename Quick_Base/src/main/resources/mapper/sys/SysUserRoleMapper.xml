@@ -7,4 +7,7 @@
     <select id="queryRoleIdList" resultType="java.lang.Integer">
         select role_id from sys_user_role where user_id=#{userId}
     </select>
+    <select id="queryUserIdList" resultType="java.lang.Integer">
+        select user_id from sys_user_role where role_id=#{roleId}
+    </select>
 </mapper>

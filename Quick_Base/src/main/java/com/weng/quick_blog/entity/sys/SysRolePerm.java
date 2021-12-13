@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -20,6 +21,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("sys_role_perm")
+@NoArgsConstructor
 public class SysRolePerm implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -31,4 +33,9 @@ public class SysRolePerm implements Serializable {
 
     @TableField("perm_id")
     private Integer permId;
+
+    public SysRolePerm(Integer roleId,Integer permId){
+        this.roleId = roleId;
+        this.permId = permId;
+    }
 }

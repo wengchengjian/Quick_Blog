@@ -5,21 +5,28 @@
 package com.weng.quick_blog.service.sys.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.weng.quick_blog.common.constants.SysConstants;
 import com.weng.quick_blog.common.util.PageQuery;
+import com.weng.quick_blog.entity.security.SafeUserDetails;
+import com.weng.quick_blog.entity.sys.SysRole;
 import com.weng.quick_blog.entity.sys.SysUser;
 import com.weng.quick_blog.mapper.sys.SysUserMapper;
+import com.weng.quick_blog.service.sys.SysRoleService;
 import com.weng.quick_blog.service.sys.SysUserRoleService;
 import com.weng.quick_blog.service.sys.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>
@@ -33,6 +40,12 @@ import java.util.Arrays;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private SysRoleService sysRoleService;
 
     /**
      * 分页查询用户信息
@@ -50,19 +63,41 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
+     * 管理员 分页查询用户信息
+     * @param pageNum
+     * @param pageSize
+     * @param userName
+     * @return
+     */
+    @Override
+    public PageQuery<SysUser> queryPage(Integer pageNum, Integer pageSize, String userName) {
+        Page<SysUser> page = new Page<>(pageNum,pageSize);
+        IPage<SysUser> res = baseMapper.selectPage(page,new QueryWrapper<SysUser>().lambda()
+                .like(StringUtils.isNotBlank(userName),SysUser::getUsername,userName));
+        return new PageQuery<>(res);
+    }
+
+    /**
      * 更新密码
-     * @param userId 用户唯一id
      * @param oldPassword   老密码
      * @param newPassword   新密码
      * @return
      */
     @Override
-    public Boolean updatePassword(Integer userId, String oldPassword, String newPassword) {
-        SysUser sysUser = new SysUser();
-        sysUser.setPassword(newPassword);
-        return this.update(sysUser,new UpdateWrapper<SysUser>().lambda()
-                .eq(userId!=null,SysUser::getUserId,userId)
-                .eq(SysUser::getPassword,oldPassword));
+    public Boolean updatePassword(String oldPassword, String newPassword) {
+        SafeUserDetails currentUser = this.getCurrentUser();
+
+        if(!bCryptPasswordEncoder.matches(oldPassword,currentUser.getPassword())){
+            return false;
+        }
+        String encodePassword = bCryptPasswordEncoder.encode(newPassword);
+        SysUser byId = this.getById(currentUser.getUserId());
+        byId.setPassword(encodePassword);
+
+        this.updateById(byId);
+        //TODO 更新密码后需要强制用户重新登录,可以将token放入redis中，然后将token过期即可
+
+        return true;
     }
 
     /**
@@ -81,6 +116,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser findByName(String username) {
         return baseMapper.selectOne(new QueryWrapper<SysUser>().lambda()
                 .eq(StringUtils.isNotBlank(username),SysUser::getUsername,username));
+    }
+
+    @Override
+    public SafeUserDetails getCurrentUser() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        SafeUserDetails user = (SafeUserDetails) context.getAuthentication().getPrincipal();
+        return user;
+    }
+
+    @Override
+    public SysUser infoById(Integer id) {
+        SysUser byId = baseMapper.selectById(id);
+
+        List<Integer> roleIds = sysUserRoleService.queryRoleIdList(id);
+
+        List<SysRole> sysRoles = sysRoleService.selectListById(roleIds);
+
+        byId.setRoleList(sysRoles);
+
+        return byId;
+    }
+
+    /**
+     * 当前用户是否是管理员
+     * @return
+     */
+    @Override
+    public boolean isAdmin() {
+        SafeUserDetails currentUser = this.getCurrentUser();
+        log.info("判断是否管理员: ");
+        if(currentUser.getAuthorities().contains(SysConstants.ADMIN)){
+            return true;
+        }
+        return false;
     }
 
     private void checkRole(SysUser user){

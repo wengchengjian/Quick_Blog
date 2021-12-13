@@ -42,4 +42,11 @@ public interface SysUserRoleService extends IService<SysUserRole> {
      * @return
      */
     List<Integer> queryRoleIdList(Integer userId);
+
+    /**
+     * 根据roleId 查询userId
+     * @param roleId 用户id
+     * @return
+     */
+    List<Integer> queryUserIdList(Integer roleId);
 }

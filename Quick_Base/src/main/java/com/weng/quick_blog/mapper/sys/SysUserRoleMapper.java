@@ -23,4 +23,6 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
      * @return
      */
     List<Integer> queryRoleIdList(Integer userId);
+
+    List<Integer> queryUserIdList(Integer roleId);
 }

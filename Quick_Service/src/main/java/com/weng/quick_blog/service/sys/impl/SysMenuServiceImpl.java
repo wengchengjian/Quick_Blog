@@ -69,7 +69,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public Boolean hasChildrenMenu(Integer id) {
-        return Optional.ofNullable(queryListParentId(id)).get().size() > 0;
+        return !Optional.ofNullable(queryListParentId(id)).get().isEmpty();
     }
 
     @Override

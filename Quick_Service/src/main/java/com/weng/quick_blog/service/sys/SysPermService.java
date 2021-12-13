@@ -27,4 +27,6 @@ public interface SysPermService extends IService<SysPerm> {
     List<SysPerm> queryAllPerms(Integer permId);
 
     List<SysMenu> queryMenuByPerm(Collection<? extends SysPerm> perms);
+
+    SysPerm findByName(String perm);
 }

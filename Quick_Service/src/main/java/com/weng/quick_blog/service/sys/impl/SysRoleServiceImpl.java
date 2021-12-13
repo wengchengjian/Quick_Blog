@@ -8,23 +8,23 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.weng.quick_blog.common.constants.SysConstants;
 import com.weng.quick_blog.common.exception.GlobalException;
 import com.weng.quick_blog.common.util.PageQuery;
+import com.weng.quick_blog.entity.security.SafeUserDetails;
+import com.weng.quick_blog.entity.sys.SysPerm;
 import com.weng.quick_blog.entity.sys.SysRole;
+import com.weng.quick_blog.entity.sys.SysRolePerm;
+import com.weng.quick_blog.entity.sys.SysUser;
 import com.weng.quick_blog.mapper.sys.SysRoleMapper;
-import com.weng.quick_blog.service.sys.SysRoleService;
-import com.weng.quick_blog.service.sys.SysUserRoleService;
-import com.weng.quick_blog.service.sys.SysUserService;
+import com.weng.quick_blog.service.sys.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -40,6 +40,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
 
     @Autowired
+    private SysRolePermService sysRolePermService;
+
+    @Autowired
+    private SysPermService sysPermService;
+
+    @Autowired
     private SysUserRoleService sysUserRoleService;
 
     @Autowired
@@ -52,30 +58,60 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      * @return
      */
     @Override
-    public PageQuery<SysRole> queryPage(Integer pageNum, Integer pageSize,String roleName,Integer createUserId) {
+    public PageQuery<SysRole> queryPage(Integer pageNum, Integer pageSize,Integer createUserId) {
         Page<SysRole> page = new Page<>(pageNum,pageSize);
         IPage<SysRole> res=baseMapper.selectPage(page, new QueryWrapper<SysRole>().lambda()
-                .like(StringUtils.isNotBlank(roleName),SysRole::getRoleName,roleName)
                 .eq(createUserId!=null,SysRole::getCreateUserId,createUserId)
         );
+        res.getRecords().forEach(sysRole->{
+            Integer createUserId1 = sysRole.getCreateUserId();
+            SysUser byId = sysUserService.getById(createUserId1);
+            sysRole.setRoleName(byId.getAppellation());
+        });
+        return new PageQuery<SysRole>(res);
+    }
+
+    @Override
+    public PageQuery<SysRole> queryPage(Integer pageNum, Integer pageSize) {
+        Page<SysRole> page = new Page<>(pageNum,pageSize);
+        IPage<SysRole> res=baseMapper.selectPage(page, new QueryWrapper<SysRole>());
+
+        res.getRecords().forEach(sysRole->{
+            Integer createUserId1 = sysRole.getCreateUserId();
+            SysUser byId = sysUserService.getById(createUserId1);
+            sysRole.setRoleName(byId.getAppellation());
+        });
         return new PageQuery<SysRole>(res);
     }
 
     /**
-     * 批量删除角色
+     * 批量删除角色 用户与角色强相关，不能在用户具有角色的情况下直接删除
      * @param ids
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBatch(Integer[] ids) {
-        //TODO 删除关联
+        List<Integer> collect = Arrays.stream(ids).filter(id -> {
+            SysRole byRoleId = this.findByRoleId(id);
 
-        // 删除角色与用户关联
+            // 查询是否有用户绑定这个角色
+            List<Integer> integers = sysUserRoleService.queryUserIdList(id);
+            if (integers != null && !integers.isEmpty()) {
+                throw new GlobalException(String.format("%s角色关联了其他用户,无法删除",byRoleId.getRoleName()));
+            }
+            // 其他情况则删除
+            return true;
+        }).collect(Collectors.toList());
 
-        sysUserRoleService.deleteBatchByRoleId(ids);
+        if(!collect.isEmpty()) {
+            // 先删除权限与角色的关联
+            sysRolePermService.delteBatchByRoleId(collect);
+
+            // 再删除角色
+            baseMapper.deleteBatchIds(collect);
+        }
 
 
-        // 删除角色
-        this.removeByIds(Arrays.asList(ids));
 
     }
 
@@ -91,7 +127,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public SysRole findByRoleId(Integer roleId) {
-        return baseMapper.selectById(roleId);
+        SysRole sysRole = baseMapper.selectById(roleId);
+
+        Integer createUserId1 = sysRole.getCreateUserId();
+        SysUser byId = sysUserService.getById(createUserId1);
+        sysRole.setCreateUserName(byId.getAppellation());
+
+        return sysRole;
     }
 
     @Override
@@ -101,46 +143,75 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean save(SysRole role) {
-        role.setCreateTime(new Date());
-
-        //检查越权
-        checkPerms(role);
-
-        baseMapper.insert(role);
-
-
-
-        return true;
+    public List<SysRole> selectListById(List<Integer> ids) {
+        List<SysRole> sysRoles = baseMapper.selectBatchIds(ids);
+        return sysRoles;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateById(SysRole role) {
+    public void insert(SysRole role) {
 
-        //检查越权
-        checkPerms(role);
+        SafeUserDetails currentUser = sysUserService.getCurrentUser();
 
-        baseMapper.updateById(role);
+        role.setCreateUserId(currentUser.getUserId());
+        role.setCreateTime(new Date());
 
+        //插入角色
+        baseMapper.insert(role);
+        //更新角色与权限的关联
+        List<String> permList = Optional.ofNullable(role.getPermList()).orElse(new ArrayList<>());
 
+        List<SysRolePerm> collect = permList.stream().map(perm -> {
+            SysPerm byName = sysPermService.findByName(perm);
+            return new SysRolePerm(role.getRoleId(),byName.getId());
+        }).collect(Collectors.toList());
 
-        return true;
-    }
-
-    // TODO 待修改逻辑
-    private void checkPerms(SysRole role){
-        if(role.getCreateUserId().equals(SysConstants.ADMIN)){
-            return ;
-        }
-
-        // 查询创建者的权限列表
-        List<Integer> menuIdList = baseMapper.queryRoleIdList(role.getCreateUserId());
-
-        if(!menuIdList.containsAll(role.getMenuIdList())){
-            log.error("角色新增的权限已超出创建者的权限,创建者Id: {},角色Id: {}",role.getCreateUserId(),role.getRoleId());
-            throw new GlobalException(String.format("新增角色的权限已超出创建者的权限,创建者Id: %s,角色Id: %s",role.getCreateUserId(),role.getRoleId()));
+        // 重复的权限直接覆盖
+        if(!collect.isEmpty()){
+            sysRolePermService.saveOrUpdateBatch(collect);
         }
     }
+
+    @Override
+    public boolean isExist(String roleName, Integer userId) {
+        return baseMapper.selectOne(new QueryWrapper<SysRole>().lambda()
+                .eq(StringUtils.isNotEmpty(roleName),SysRole::getRoleName,roleName)
+                .eq(userId!=null,SysRole::getCreateUserId,userId))!=null;
+    }
+
+    /**
+     * 更新角色
+     * @param role
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRole(SysRole role) {
+        // TODO 参数应重新定一个class接受，项目最后优化时更改
+        SysRole sysRole = new SysRole();
+        sysRole.setRoleId(role.getRoleId());
+        sysRole.setRoleName(role.getRoleName());
+        sysRole.setRemark(role.getRemark());
+        //更新角色
+        baseMapper.updateById(sysRole);
+
+
+        //先删除之前的关系
+        sysRolePermService.delteByRoleId(role.getRoleId());
+
+        //更新权限与角色的关系
+        List<String> permList = role.getPermList();
+
+        // TODO 需要判断传递的权限是否合法，现在的方法是使用filter先过滤不合法的，但这样多查询了一次 显而易见的优化方法 可以将权限放进内存中，不再查数据库，数据库更新时同时同步到内存中
+        List<SysRolePerm> collect = permList.stream()
+                .filter(perm -> sysPermService.findByName(perm)!=null)
+                .map(perm -> {
+                    SysPerm byName = sysPermService.findByName(perm);
+                    return new SysRolePerm(role.getRoleId(),byName.getId());
+                })
+                .collect(Collectors.toList());
+
+        sysRolePermService.saveBatch(collect);
+    }
+
 }

@@ -57,7 +57,7 @@ public class UserPermissionEvaluator implements PermissionEvaluator {
         // map映射SysPerm的权限名
         Set<String> permissions= sysPerms.stream().map(sysPerm -> sysPerm.getName()).collect(Collectors.toSet());
         log.info("当前用户的权限: {}",permissions);
-
+        log.info("当前用户的角色: {}",userInfo.getAuthorities());
         return  permissions.contains(permission);
     }
 

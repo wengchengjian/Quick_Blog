@@ -42,6 +42,12 @@ public class SysRole implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+
     @TableField(exist=false)
-    private List<Integer> menuIdList;
+    private String createUserName;
+
+    @TableField(exist=false)
+    private List<String> permList;
+
+
 }

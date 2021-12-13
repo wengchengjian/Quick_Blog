@@ -6,6 +6,7 @@ package com.weng.quick_blog.service.sys;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.weng.quick_blog.common.util.PageQuery;
+import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysUser;
 
 /**
@@ -26,13 +27,20 @@ public interface SysUserService extends IService<SysUser> {
     PageQuery<SysUser> queryPage(Integer pageNum,Integer pageSize,String userName,Integer createUserId);
 
     /**
+     * 管理员 分页查询用户信息
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageQuery<SysUser> queryPage(Integer pageNum,Integer pageSize,String userName);
+
+    /**
      * 更新密码
-     * @param userId
      * @param oldPassword
      * @param newPassword
      * @return
      */
-    Boolean updatePassword(Integer userId,String oldPassword,String newPassword);
+    Boolean updatePassword(String oldPassword,String newPassword);
 
     /**
      * 批量删除
@@ -41,4 +49,14 @@ public interface SysUserService extends IService<SysUser> {
     void deleteBatch(Integer[] ids);
 
     SysUser findByName(String username);
+
+    SafeUserDetails getCurrentUser();
+
+    SysUser infoById(Integer id);
+
+    /**
+     * 当前用户是否是管理员
+     * @return
+     */
+    boolean isAdmin();
 }

@@ -20,12 +20,20 @@ import java.util.List;
 public interface SysRoleService extends IService<SysRole> {
 
     /**
-     * 分页查询角色
+     * 分页查询角色 指定当前创建者
      * @param pageNum
      * @param pageSize
      * @return
      */
-    PageQuery<SysRole> queryPage(Integer pageNum,Integer pageSize,String roleName,Integer createUserId);
+    PageQuery<SysRole> queryPage(Integer pageNum,Integer pageSize,Integer createUserId);
+
+    /**
+     * 管理员分页查询全部角色
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageQuery<SysRole> queryPage(Integer pageNum,Integer pageSize);
 
     /**
      * 批量删除角色
@@ -40,7 +48,44 @@ public interface SysRoleService extends IService<SysRole> {
      */
     List<Integer> queryRoleIdList(Integer createUserId);
 
+    /**
+     * 通过roleId获取Role
+     * @param roleId
+     * @return
+     */
     SysRole findByRoleId(Integer roleId);
 
+    /**
+     * 通过roleName查询roleId
+     * @param authority
+     * @return
+     */
     Integer findByRoleName(String authority);
+
+    /**
+     * 通过ids批量查询
+     * @param ids
+     * @return
+     */
+    List<SysRole> selectListById(List<Integer> ids);
+
+    /**
+     * 插入一个角色
+     * @param role
+     */
+    void insert(SysRole role);
+
+    /**
+     * 角色是否存在
+     * @param roleName
+     * @param userId
+     * @return
+     */
+    boolean isExist(String roleName, Integer userId);
+
+    /**
+     * 更新角色
+     * @param role
+     */
+    void updateRole(SysRole role);
 }

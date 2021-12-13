@@ -31,8 +31,12 @@ public class SysUser implements Serializable {
     @TableId(value = "user_id", type = IdType.AUTO)
     private Integer userId;
 
+
     @ApiModelProperty(value = "用户名")
     private String username;
+
+    @ApiModelProperty(value = "昵称")
+    private String appellation;
 
     @ApiModelProperty(value = "密码")
     private String password;
@@ -53,7 +57,7 @@ public class SysUser implements Serializable {
     private Integer status;
 
     @TableField(exist=false)
-    private List<Integer> roleIdList;
+    private List<SysRole> roleList;
 
     private Integer locked;
 
