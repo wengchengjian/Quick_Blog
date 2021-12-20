@@ -5,8 +5,8 @@
 package com.weng.quick_blog.admin.sys;
 
 import com.weng.quick_blog.Result;
-import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysMenu;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 import com.weng.quick_blog.service.sys.SysMenuService;
 import com.weng.quick_blog.service.sys.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +79,7 @@ public class SysMenuController {
     @DeleteMapping("/delete")
     @PreAuthorize("hasPermission('/sys/menu/delete','sys:menu:delete')")
     public Result delete(@RequestBody Integer[] ids){
-        SafeUserDetails user = sysUserService.getCurrentUser();
+        SysUserVO user = sysUserService.getCurrentUser();
 
         for(Integer id: ids){
             Boolean has = sysMenuService.hasChildrenMenu(id);

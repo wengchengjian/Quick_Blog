@@ -26,6 +26,6 @@ public enum MenuTypeEnum {
      */
     MENU(1),
     ;
-    private Integer value;
+    private final Integer value;
 
 }

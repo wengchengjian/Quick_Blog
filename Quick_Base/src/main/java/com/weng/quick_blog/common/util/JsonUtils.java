@@ -43,7 +43,7 @@ public class JsonUtils {
         if (obj instanceof Integer || obj instanceof Long || obj instanceof Float || obj instanceof Double
         || obj instanceof Boolean || obj instanceof String){
             return String.valueOf(obj);
-        };
+        }
         try{
             return objectMapper.writeValueAsString(obj);
         }catch(JsonProcessingException e){

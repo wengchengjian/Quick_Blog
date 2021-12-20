@@ -32,7 +32,7 @@ public enum CategoryRankEnum {
      */
     THIRD(2);
 
-    private int value;
+    private final int value;
 
     CategoryRankEnum(int value) {
         this.value = value;

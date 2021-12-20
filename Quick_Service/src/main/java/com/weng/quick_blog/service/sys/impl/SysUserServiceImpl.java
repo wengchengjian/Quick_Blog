@@ -13,18 +13,21 @@ import com.weng.quick_blog.common.util.PageQuery;
 import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysRole;
 import com.weng.quick_blog.entity.sys.SysUser;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 import com.weng.quick_blog.mapper.sys.SysUserMapper;
 import com.weng.quick_blog.service.sys.SysRoleService;
 import com.weng.quick_blog.service.sys.SysUserRoleService;
 import com.weng.quick_blog.service.sys.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +50,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysRoleService sysRoleService;
 
+
+
+
     /**
      * 分页查询用户信息
      * @param pageNum 当前页码
@@ -54,12 +60,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public PageQuery<SysUser> queryPage(Integer pageNum, Integer pageSize,String userName,Integer createUserId) {
+    public PageQuery<SysUserVO> queryPage(Integer pageNum, Integer pageSize,String userName,Integer createUserId) {
         Page<SysUser> page = new Page<>(pageNum,pageSize);
         IPage<SysUser> res = baseMapper.selectPage(page,new QueryWrapper<SysUser>().lambda()
                 .like(StringUtils.isNotBlank(userName),SysUser::getUsername,userName)
                 .eq(createUserId!=null,SysUser::getCreateUserId,createUserId));
-        return new PageQuery<>(res);
+
+        PageQuery pageQuery = new PageQuery(res);
+
+        List<SysUserVO> newList = new ArrayList<>();
+        List list = pageQuery.getList();
+        for (Object o : list){
+            SysUserVO sysUserVO = new SysUserVO();
+            BeanUtils.copyProperties(o,sysUserVO);
+            newList.add(sysUserVO);
+        }
+        pageQuery.setList(newList);
+
+        return pageQuery;
     }
 
     /**
@@ -70,11 +88,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public PageQuery<SysUser> queryPage(Integer pageNum, Integer pageSize, String userName) {
+    public PageQuery<SysUserVO> queryPage(Integer pageNum, Integer pageSize, String userName) {
         Page<SysUser> page = new Page<>(pageNum,pageSize);
         IPage<SysUser> res = baseMapper.selectPage(page,new QueryWrapper<SysUser>().lambda()
-                .like(StringUtils.isNotBlank(userName),SysUser::getUsername,userName));
-        return new PageQuery<>(res);
+                .like(StringUtils.isNotBlank(userName),SysUser::getUsername,userName).orderByAsc(SysUser::getCreateTime));
+
+        PageQuery pageQuery = new PageQuery(res);
+
+        List<SysUserVO> newList = new ArrayList<>();
+        List list = pageQuery.getList();
+        for (Object o : list){
+            SysUserVO sysUserVO = new SysUserVO();
+            BeanUtils.copyProperties(o,sysUserVO);
+            newList.add(sysUserVO);
+        }
+        pageQuery.setList(newList);
+
+        return pageQuery;
     }
 
     /**
@@ -85,7 +115,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public Boolean updatePassword(String oldPassword, String newPassword) {
-        SafeUserDetails currentUser = this.getCurrentUser();
+        SafeUserDetails currentUser = this.getCurrentSysUser();
 
         if(!bCryptPasswordEncoder.matches(oldPassword,currentUser.getPassword())){
             return false;
@@ -95,7 +125,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         byId.setPassword(encodePassword);
 
         this.updateById(byId);
-        //TODO 更新密码后需要强制用户重新登录,可以将token放入redis中，然后将token过期即可
+        //TODO 更新密码后需要强制用户重新登录,可以将token放入redis中，然后将对应的token过期即可
 
         return true;
     }
@@ -119,14 +149,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public SafeUserDetails getCurrentUser() {
+    public SysUserVO getCurrentUser() {
         SecurityContext context = SecurityContextHolder.getContext();
         SafeUserDetails user = (SafeUserDetails) context.getAuthentication().getPrincipal();
+
+        return this.infoById(user.getUserId());
+    }
+
+    @Override
+    public SafeUserDetails getCurrentSysUser() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        SafeUserDetails user = (SafeUserDetails) context.getAuthentication().getPrincipal();
+
         return user;
     }
 
     @Override
-    public SysUser infoById(Integer id) {
+    public SysUserVO infoById(Integer id) {
         SysUser byId = baseMapper.selectById(id);
 
         List<Integer> roleIds = sysUserRoleService.queryRoleIdList(id);
@@ -135,7 +174,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         byId.setRoleList(sysRoles);
 
-        return byId;
+        SysUserVO res = new SysUserVO();
+        BeanUtils.copyProperties(byId,res);
+
+        return res;
     }
 
     /**
@@ -144,12 +186,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public boolean isAdmin() {
-        SafeUserDetails currentUser = this.getCurrentUser();
-        log.info("判断是否管理员: ");
-        if(currentUser.getAuthorities().contains(SysConstants.ADMIN)){
-            return true;
-        }
-        return false;
+        SafeUserDetails currentUser = this.getCurrentSysUser();
+        return currentUser.getAuthorities().contains(SysConstants.ADMIN);
     }
 
     private void checkRole(SysUser user){

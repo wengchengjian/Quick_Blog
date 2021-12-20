@@ -7,8 +7,8 @@ package com.weng.quick_blog.admin.sys;
 import com.weng.quick_blog.Result;
 import com.weng.quick_blog.common.request.PasswordRequest;
 import com.weng.quick_blog.common.util.PageQuery;
-import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysUser;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 import com.weng.quick_blog.service.sys.SysRoleService;
 import com.weng.quick_blog.service.sys.SysUserRoleService;
 import com.weng.quick_blog.service.sys.SysUserService;
@@ -42,19 +42,20 @@ public class SysUserController {
      */
     @GetMapping("/info")
     @PreAuthorize("hasPermission('/sys/user/info','sys:user:info')")
-    public Result<SysUser> getInfo() {
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
+    public Result<SysUserVO> getInfo() {
+        SysUserVO currentUser = sysUserService.getCurrentUser();
+
         return Result.Success(currentUser);
     }
 
     @GetMapping("/list")
     @PreAuthorize("hasPermission('/sys/user/list','sys:user:list')")
-    public Result<PageQuery<SysUser>> list(@RequestParam(value = "pageNum",defaultValue = "0")Integer pageNum,
+    public Result<PageQuery<SysUserVO>> list(@RequestParam(value = "pageNum",defaultValue = "0")Integer pageNum,
                                            @RequestParam(value="pageSize",defaultValue = "10")Integer pageSize,
                                            @RequestParam(value="userName",defaultValue = "")String userName
                                            ) {
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
-        PageQuery<SysUser> res = null;
+        SysUserVO currentUser = sysUserService.getCurrentUser();
+        PageQuery<SysUserVO> res = null;
         if(sysUserService.isAdmin()){
             res=sysUserService.queryPage(pageNum,pageSize,userName);
         }else{
@@ -85,7 +86,7 @@ public class SysUserController {
     @PostMapping("/save")
     @PreAuthorize("hasPermission('/sys/user/save','sys:user:save')")
     public Result save(@RequestBody SysUser sysUser){
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
+        SysUserVO currentUser = sysUserService.getCurrentUser();
 
         sysUser.setCreateUserId(currentUser.getUserId());
 
@@ -124,10 +125,10 @@ public class SysUserController {
      */
     @GetMapping("/info/{id}")
     @PreAuthorize("hasPermission('/sys/user/info','sys:user:info')")
-    public Result<SysUser> info(@PathVariable("id")Integer id){
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
+    public Result<SysUserVO> info(@PathVariable("id")Integer id){
+        SysUserVO currentUser = sysUserService.getCurrentUser();
 
-        SysUser byId = sysUserService.infoById(id);;
+        SysUserVO byId = sysUserService.infoById(id);
 
         if(byId.getCreateUserId().equals(currentUser.getUserId()) || sysUserService.isAdmin()){
             return Result.Success(byId);

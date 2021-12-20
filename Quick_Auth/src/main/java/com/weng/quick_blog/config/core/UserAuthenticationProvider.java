@@ -42,6 +42,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
         // 获取表单中返回的密码
         String password = (String) authentication.getCredentials();
 
+        log.info("username:{},password:{}",userName,password);
         SafeUserDetails userInfo = (SafeUserDetails) safeUserDetailsService.loadUserByUsername(userName);
 
 

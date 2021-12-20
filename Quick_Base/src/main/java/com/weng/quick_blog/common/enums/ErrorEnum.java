@@ -30,7 +30,7 @@ public enum ErrorEnum {
     USER_PASSWORD_FAIL(500,"用户名或账号错误"),
     LOGIN_FAIL(500,"登录失败")
     ;
-    private int code;
+    private final int code;
 
-    private String msg;
+    private final String msg;
 }

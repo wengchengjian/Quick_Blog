@@ -10,11 +10,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.weng.quick_blog.common.exception.GlobalException;
 import com.weng.quick_blog.common.util.PageQuery;
-import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysPerm;
 import com.weng.quick_blog.entity.sys.SysRole;
 import com.weng.quick_blog.entity.sys.SysRolePerm;
 import com.weng.quick_blog.entity.sys.SysUser;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 import com.weng.quick_blog.mapper.sys.SysRoleMapper;
 import com.weng.quick_blog.service.sys.*;
 import lombok.extern.slf4j.Slf4j;
@@ -152,7 +152,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Transactional(rollbackFor = Exception.class)
     public void insert(SysRole role) {
 
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
+        SysUserVO currentUser = sysUserService.getCurrentUser();
 
         role.setCreateUserId(currentUser.getUserId());
         role.setCreateTime(new Date());

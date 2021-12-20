@@ -6,8 +6,8 @@ package com.weng.quick_blog.admin.sys;
 
 import com.weng.quick_blog.Result;
 import com.weng.quick_blog.common.util.PageQuery;
-import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysRole;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 import com.weng.quick_blog.service.sys.SysRolePermService;
 import com.weng.quick_blog.service.sys.SysRoleService;
 import com.weng.quick_blog.service.sys.SysUserRoleService;
@@ -47,7 +47,7 @@ public class SysRoleController {
     @PreAuthorize("hasPermission('/sys/role/list','sys:role:list')")
     public Result<PageQuery<SysRole>> list(@RequestParam(value = "pageNum",defaultValue = "0")Integer pageNum,
                                            @RequestParam(value = "pageSize",defaultValue = "10")Integer pageSize) {
-        SafeUserDetails user = sysUserService.getCurrentUser();
+        SysUserVO user = sysUserService.getCurrentUser();
         PageQuery<SysRole> sysRolePageQuery = null;
         if(sysUserService.isAdmin()){
             //管理查询全部角色
@@ -62,7 +62,7 @@ public class SysRoleController {
     @GetMapping("/info/{id}")
     @PreAuthorize("hasPermission('/sys/role/info','sys:role:info')")
     public Result<SysRole> info(@PathVariable("id")Integer id){
-        SafeUserDetails currentUser = sysUserService.getCurrentUser();
+        SysUserVO currentUser = sysUserService.getCurrentUser();
         SysRole byId = sysRoleService.getById(id);
         if(byId==null){
             return Result.Failure("无此用户");
@@ -78,7 +78,7 @@ public class SysRoleController {
     @PostMapping("/save")
     @PreAuthorize("hasPermission('/sys/role/save','sys:role:save')")
     public Result save(@RequestBody  SysRole role){
-        SafeUserDetails user = sysUserService.getCurrentUser();
+        SysUserVO user = sysUserService.getCurrentUser();
 
         boolean exist = sysRoleService.isExist(role.getRoleName(),role.getCreateUserId());
         if(exist){

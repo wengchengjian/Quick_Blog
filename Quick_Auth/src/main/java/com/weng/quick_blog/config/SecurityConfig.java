@@ -6,6 +6,7 @@ package com.weng.quick_blog.config;
 
 import com.weng.quick_blog.config.core.UserAuthenticationProvider;
 import com.weng.quick_blog.config.core.UserPermissionEvaluator;
+import com.weng.quick_blog.config.filter.CustomAuthenticationFilter;
 import com.weng.quick_blog.config.filter.JWTAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * <p>
@@ -71,12 +73,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserPermissionEvaluator userPermissionEvaluator;
 
+
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter();
+        customAuthenticationFilter.setAuthenticationManager(authenticationManager());
+        customAuthenticationFilter.setAuthenticationSuccessHandler(userLoginSuccessHandler);
+        customAuthenticationFilter.setAuthenticationFailureHandler(userLoginFailureHandler);
 
+        return customAuthenticationFilter;
+    }
 
     /**
      * 注入自定义PermissionEvaluator
@@ -111,8 +123,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().authenticationEntryPoint(userAuthenticationEntryPointHandler)
                 .and()
                 .formLogin()
-                .successHandler(userLoginSuccessHandler)
-                .failureHandler(userLoginFailureHandler)
                 .and()
                 .logout()
                 .logoutSuccessHandler(userLogoutSuccessHandler)
@@ -126,8 +136,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 禁用缓存
         http.headers().cacheControl();
+        //替换原表单登录方式
+        http.addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         //添加JWT过滤器
         http.addFilter(jwtAuthenticationTokenFilter());
+
 
     }
 

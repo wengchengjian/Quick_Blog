@@ -38,6 +38,9 @@ public class SysMenu implements Serializable {
     @ApiModelProperty(value = "菜单URL")
     private String url;
 
+    @ApiModelProperty(value = "iconfont图标")
+    private String icon;
+
 
 
     @ApiModelProperty(value = "类型   0：目录   1：菜单 ")

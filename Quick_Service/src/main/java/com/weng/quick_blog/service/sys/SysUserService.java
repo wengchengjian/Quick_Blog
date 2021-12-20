@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.weng.quick_blog.common.util.PageQuery;
 import com.weng.quick_blog.entity.security.SafeUserDetails;
 import com.weng.quick_blog.entity.sys.SysUser;
+import com.weng.quick_blog.entity.sys.vo.SysUserVO;
 
 /**
  * <p>
@@ -24,7 +25,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param pageSize
      * @return
      */
-    PageQuery<SysUser> queryPage(Integer pageNum,Integer pageSize,String userName,Integer createUserId);
+    PageQuery<SysUserVO> queryPage(Integer pageNum,Integer pageSize,String userName,Integer createUserId);
 
     /**
      * 管理员 分页查询用户信息
@@ -32,7 +33,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param pageSize
      * @return
      */
-    PageQuery<SysUser> queryPage(Integer pageNum,Integer pageSize,String userName);
+    PageQuery<SysUserVO> queryPage(Integer pageNum, Integer pageSize, String userName);
 
     /**
      * 更新密码
@@ -42,6 +43,8 @@ public interface SysUserService extends IService<SysUser> {
      */
     Boolean updatePassword(String oldPassword,String newPassword);
 
+
+
     /**
      * 批量删除
      * @param ids
@@ -50,9 +53,19 @@ public interface SysUserService extends IService<SysUser> {
 
     SysUser findByName(String username);
 
-    SafeUserDetails getCurrentUser();
+    /**
+     * 获取当前安全用户，没有私密信息
+     * @return
+     */
+    SysUserVO getCurrentUser();
 
-    SysUser infoById(Integer id);
+    /**
+     * 获取当前用户，包含私密信息
+     * @return
+     */
+    SafeUserDetails getCurrentSysUser();
+
+    SysUserVO infoById(Integer id);
 
     /**
      * 当前用户是否是管理员
