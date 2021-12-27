@@ -44,11 +44,12 @@ public class Article extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "点赞量")
     private Long likeNum;
 
+    @ApiModelProperty(value = "评论量")
+    private Long commentNum;
+
     @ApiModelProperty(value = "封面")
     private String cover;
 
-    @ApiModelProperty(value = "文章展示类别,0:普通，1：大图片，2：无图片")
-    private Integer coverType;
 
     @ApiModelProperty(value = "是否推荐文章")
     private Integer recommend;

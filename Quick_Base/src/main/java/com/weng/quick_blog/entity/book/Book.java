@@ -60,6 +60,9 @@ public class Book extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "点赞量")
     private Integer likeNum;
 
+    @ApiModelProperty(value = "评论量")
+    private Long commentNum;
+
     @ApiModelProperty(value = "是否推荐")
     private Boolean recommend;
 

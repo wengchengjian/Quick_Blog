@@ -4,9 +4,12 @@
  */
 package com.weng.quick_blog.entity.operation.vo;
 
+import com.weng.quick_blog.entity.operation.Category;
 import com.weng.quick_blog.entity.operation.Recommend;
 import com.weng.quick_blog.entity.operation.Tag;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
  * @version recommendVO:RecommendVO.java v1.0 2021/12/2 3:48 下午 wengchengjian Exp $
  */
 @Data
+@NoArgsConstructor
 public class RecommendVO extends Recommend {
     private String description;
 
@@ -28,11 +32,14 @@ public class RecommendVO extends Recommend {
 
     private Long likeNum;
 
-    private String urlType;
+    private String categoryId;
 
-    private String cover;
-
-    private Date createTime;
 
     private List<Tag> tagList;
+
+    private Category category;
+
+    public RecommendVO(Recommend recommend){
+        super(recommend.getId(),recommend.getType(),recommend.getTitle(),recommend.getTop());
+    }
 }

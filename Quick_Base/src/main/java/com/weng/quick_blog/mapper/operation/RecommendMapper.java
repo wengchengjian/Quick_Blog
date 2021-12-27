@@ -36,7 +36,4 @@ public interface RecommendMapper extends BaseMapper<Recommend> {
      */
     List<Recommend> listHotRead();
 
-    void otherDecomeTop(Integer id);
-
-    void becomeTop(Integer id);
 }

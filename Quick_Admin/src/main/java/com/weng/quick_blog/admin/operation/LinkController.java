@@ -25,7 +25,6 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping("/admin/operation/link")
-@PreAuthorize("hasRole('admin')")
 public class LinkController {
     @Resource
     private LinkService linkService;

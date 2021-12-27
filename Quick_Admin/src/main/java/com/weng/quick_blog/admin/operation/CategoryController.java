@@ -28,7 +28,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/operation/category")
-@PreAuthorize("hasRole('admin')")
 public class CategoryController {
     @Resource
     private CategoryService categoryService;

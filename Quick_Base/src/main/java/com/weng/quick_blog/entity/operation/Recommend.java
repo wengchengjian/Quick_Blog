@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.weng.quick_blog.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -24,6 +26,8 @@ import java.io.Serializable;
 @Data
 @ApiModel(value = "Recommand对象",description = "推荐")
 @TableName("recommend")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Recommend extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -35,8 +39,6 @@ public class Recommend extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "推荐类型")
     private Integer type;
 
-    @ApiModelProperty(value = "顺序")
-    private Integer orderNum;
 
     @ApiModelProperty(value = "标题")
     private String title;

@@ -9,12 +9,6 @@
         id, link_id, type, order_num, title, top
     </sql>
 
-    <update id="otherDecomeTop">
-        update recommend set top = 0 where id!=#{id}
-    </update>
-    <update id="becomeTop">
-        update recommend set top = 1 where id=#{id}
-    </update>
 
     <select id="listSelect" resultType="com.weng.quick_blog.entity.operation.vo.RecommendVO">
 

@@ -5,6 +5,7 @@
 package com.weng.quick_blog.service.operation;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.weng.quick_blog.common.request.recommend.QueryRecommendListPageRequest;
 import com.weng.quick_blog.common.util.PageQuery;
 import com.weng.quick_blog.entity.operation.Recommend;
 import com.weng.quick_blog.entity.operation.vo.RecommendVO;
@@ -22,28 +23,13 @@ public interface RecommendService extends IService<Recommend> {
 
     /**
      * 分页查询
-     * @param pageNum
-     * @param pageSize
      * @return
      */
-    PageQuery<Recommend> queryPage(Integer pageNum,Integer pageSize,String title);
+    PageQuery<Recommend> queryPage(QueryRecommendListPageRequest request);
 
-    /**
-     * 获取推荐列表
-     * @return
-     */
-    List<RecommendVO> listSelect();
 
-    /**
-     * 更新置顶状态
-     * @param id
-     */
-    void updateTop(Integer id);
 
-    /**
-     * 批量删除
-     * @param linkId
-     * @param type
-     */
-    void deleteBatchByLinkId(Integer[] linkId,Integer type);
+    RecommendVO findVOById(Integer id);
+
+    void deleteBatch(Integer[] ids);
 }

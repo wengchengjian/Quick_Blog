@@ -30,9 +30,9 @@ import java.util.List;
  * @author wengchengjian
  * @version TagController:TagController.java v1.0 2021/12/10 11:25 上午 wengchengjian Exp $
  */
+@Slf4j
 @RestController
 @RequestMapping("/admin/operation/tag")
-@Slf4j
 public class TagController {
     @Autowired
     private TagService tagService;
