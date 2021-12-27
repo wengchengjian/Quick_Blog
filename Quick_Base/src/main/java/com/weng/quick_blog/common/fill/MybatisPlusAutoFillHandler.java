@@ -5,6 +5,7 @@
 package com.weng.quick_blog.common.fill;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.Date;
  * @version mybatisPlusAutoFillHandler:MybatisPlusAutoFillHandler.java v1.0 2021/12/1 3:42 下午 wengchengjian Exp $
  */
 @Component
+@Slf4j
 public class MybatisPlusAutoFillHandler implements MetaObjectHandler {
     /**
      *  插入时填充

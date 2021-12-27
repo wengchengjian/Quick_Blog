@@ -28,7 +28,6 @@ public class LinkServiceTest {
 
     @Test
     public void queryPage() {
-        PageQuery page =  linkService.queryPage(0,10,"");
-        System.out.println(page);
+        linkService.removeById(5);
     }
 }

@@ -6,6 +6,7 @@ package com.weng.quick_blog.entity.sys;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.weng.quick_blog.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,13 +28,10 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="SysParam对象", description="系统参数")
-public class SysParam implements Serializable {
+public class SysParam extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "主键")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
 
     @ApiModelProperty(value = "参数键")
     @NotNull(message = "参数键不能为空")

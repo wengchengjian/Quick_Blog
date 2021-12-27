@@ -7,6 +7,7 @@ package com.weng.quick_blog.entity.sys;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.weng.quick_blog.common.base.BaseEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,11 +23,9 @@ import java.io.Serializable;
 @Data
 @TableName("sys_role_perm")
 @NoArgsConstructor
-public class SysRolePerm implements Serializable {
+public class SysRolePerm extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
-    private Integer id;
 
     @TableField("role_id")
     private Integer roleId;

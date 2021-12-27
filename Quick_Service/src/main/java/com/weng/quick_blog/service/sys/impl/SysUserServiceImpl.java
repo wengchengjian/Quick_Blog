@@ -121,7 +121,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return false;
         }
         String encodePassword = bCryptPasswordEncoder.encode(newPassword);
-        SysUser byId = this.getById(currentUser.getUserId());
+        SysUser byId = this.getById(currentUser.getId());
         byId.setPassword(encodePassword);
 
         this.updateById(byId);
@@ -153,7 +153,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SecurityContext context = SecurityContextHolder.getContext();
         SafeUserDetails user = (SafeUserDetails) context.getAuthentication().getPrincipal();
 
-        return this.infoById(user.getUserId());
+        return this.infoById(user.getId());
     }
 
     @Override

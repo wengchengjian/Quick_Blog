@@ -7,12 +7,16 @@ package com.weng.quick_blog.admin.operation;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.weng.quick_blog.Result;
 import com.weng.quick_blog.common.enums.CategoryRankEnum;
+import com.weng.quick_blog.common.request.QueryCategoryListRequest;
+import com.weng.quick_blog.common.util.PageQuery;
 import com.weng.quick_blog.entity.operation.Category;
 import com.weng.quick_blog.service.operation.CategoryService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,33 +33,26 @@ public class CategoryController {
     @Resource
     private CategoryService categoryService;
 
+    /**
+     * 分类选择器组件接口
+     * @param name 分类名 支持模糊查询
+     * @return
+     */
     @GetMapping("/listByName")
     @PreAuthorize("hasPermission('/operation/category/list','operation:category:list')")
-    public Result<List<Category>> listByName(@RequestParam String name,@RequestParam(value="type",defaultValue="1") Integer type){
-        List<Category> categoryList = categoryService.queryWithParentName(name,type);
+    public Result<List<Category>> listByName(@RequestParam(value="name",defaultValue = "") String name){
+        List<Category> categoryList = categoryService.queryByName(name);
         return Result.Success(categoryList);
     }
 
     @GetMapping("/list")
     @PreAuthorize("hasPermission('/operation/category/list','operation:category:list')")
-    public Result<List<Category>> list(){
-        List<Category> categoryList = categoryService.queryAll();
+    public Result<PageQuery<Category>> list( QueryCategoryListRequest request){
+        PageQuery<Category> categoryList = categoryService.queryPage(request);
         return Result.Success(categoryList);
     }
 
-    @GetMapping("/select")
-    @PreAuthorize("hasPermission('/operation/category/list','operation:category:list')")
-    public Result<List<Category>> select(@RequestParam(value="type",defaultValue="1") Integer type){
-        List<Category> list = categoryService.list(new QueryWrapper<Category>()
-                .lambda().eq(Category::getType,type));
-        // 添加顶级分类
-        Category root = new Category();
-        root.setId(-1);
-        root.setName("根目录");
-        root.setParentId(-1);
-        list.add(root);
-        return Result.Success(list);
-    }
+
     @GetMapping("/info/{id}")
     @PreAuthorize("hasPermission('/operation/category/info','operation:category:info')")
     public Result<Category> info(@PathVariable("id") Integer id){
@@ -65,70 +62,74 @@ public class CategoryController {
 
     @PostMapping("/save")
     @PreAuthorize("hasPermission('/operation/category/save','operation:category:save')")
-    public Result save(@RequestBody Category category) throws Exception {
+    public Result save(@Validated @RequestBody Category category) {
         //TODO 数据校验
-
-        verifyCategory(category);
+        if(!verifyExist(category)){
+            return Result.Failure("该分类的父分类不存在");
+        }
         categoryService.save(category);
+
         return Result.Success();
     }
 
-    private void verifyCategory(Category category) throws Exception {
-
-        int parentRank  = CategoryRankEnum.ROOT.getValue();
-
-        if(category.getParentId() !=CategoryRankEnum.FIRST.getValue()
-           && category.getParentId() != CategoryRankEnum.ROOT.getValue()){
-            Category parentCategory = categoryService.getById(category.getParentId());
-            parentRank = parentCategory.getRank();
+    private boolean verifyExist(@Validated Category category) {
+        Category parent = categoryService.findByParentId(category.getParentId());
+        if(parent==null){
+            return false;
         }
+        return true;
+    }
 
-        //TODO 替换自定义异常类型
-        // 一级
-        if(category.getRank() == CategoryRankEnum.FIRST.getValue()){
-            if(category.getParentId() != CategoryRankEnum.ROOT.getValue()){
-                throw new Exception("一级目录的上级目录只能是根目录");
-            }
-        }
+    /**
+     * 检查分类更新的合法性，主要检查当前更新的父节点是不是之前父节点的子节点，如果是则会形成闭环，更新失败
+     * @param category
+     * @return
+     */
+    private boolean verifyUpdate(@Validated Category category) {
 
-        //二级
-        if (category.getRank() == CategoryRankEnum.SECOND.getValue()) {
-            if (parentRank != CategoryRankEnum.FIRST.getValue()) {
-                throw new Exception("上级目录只能为一级类型");
-            }
-        }
-
-        //三级
-        if (category.getRank() == CategoryRankEnum.THIRD.getValue()) {
-            if (parentRank != CategoryRankEnum.SECOND.getValue()) {
-                throw new Exception("上级目录只能为二级类型");
-            }
-        }
+        return categoryService.checkCurrentCategory(category);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasPermission('/operation/category/update','operation:category:update')")
-    public Result update(@RequestBody Category category){
+    public Result update(@RequestBody Category category)  {
         //TODO 参数校验
+        if(!verifyExist(category)){
+            return Result.Failure("该分类的父分类不存在");
+        }
+        if(!verifyUpdate(category)){
+            return Result.Failure("该分类的父分类不合法");
+        }
         categoryService.updateById(category);
         return Result.Success(null);
     }
 
-    @DeleteMapping("/delete/{id}")
+
+    @DeleteMapping("/delete")
     @PreAuthorize("hasPermission('/operation/category/delete','operation:category:delete')")
-    public Result delete(@PathVariable("id")Integer id){
-        //判断是否有子菜单
-        List<Category> list = categoryService.queryWithParenId(id);
+    public Result delete(@RequestBody Integer[] ids){
 
-        //TODO 判断是否关联文章
+        for(Integer id:ids){
+            //判断是否有子分类
+            List<Category> list = categoryService.queryWithParenId(id);
 
-        //TODO 判断是否关联图书
-
-        //TODO 判断是否关联笔记
-
-        categoryService.removeById(id);
+            if(list!=null&&list.size()!=0){
+                return Result.Failure("该分类下仍还有子分类，请先删除子分类");
+            }
+            if(categoryService.linkWithArticle(id)){
+                return Result.Failure("该分类下仍还有文章关联，请先删除文章");
+            }
+            if(categoryService.linkWithBook(id)){
+                return Result.Failure("该分类下仍还有图书关联，请先删除图书");
+            }
+            if(categoryService.linkWithBookNote(id)){
+                return Result.Failure("该分类下仍还有笔记关联，请先删除笔记");
+            }
+        }
+        categoryService.removeByIds(Arrays.asList(ids));
 
         return Result.Success(null);
+
 
     }
 }

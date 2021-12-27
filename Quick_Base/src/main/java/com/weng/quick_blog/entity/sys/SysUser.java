@@ -7,6 +7,7 @@ package com.weng.quick_blog.entity.sys;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.weng.quick_blog.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -24,12 +25,9 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "SysUser对象",description = "用户管理")
-public class SysUser implements Serializable {
+public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID =1L;
 
-    @ApiModelProperty(value = "主键")
-    @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
 
 
     @ApiModelProperty(value = "用户名")
@@ -50,23 +48,21 @@ public class SysUser implements Serializable {
     @ApiModelProperty(value = "创建者Id")
     private Integer createUserId;
 
-    @ApiModelProperty(value = "创建时间")
-    private Date createTime;
-
-    @ApiModelProperty(value = "0禁用，1正常")
-    private Integer status;
 
     @TableField(exist=false)
     private List<SysRole> roleList;
 
+    @ApiModelProperty(value = "账号是否被锁定")
     private Integer locked;
 
+    @ApiModelProperty(value = "账号是否可用")
     private Integer enabled;
 
+    @ApiModelProperty(value = "账号是否过期")
     private Integer accountExpired;
 
-    private Integer deleted;
 
+    @ApiModelProperty(value = "账号密码是否过期")
     private Integer passwordExpired;
 
 }

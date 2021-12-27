@@ -22,9 +22,14 @@ public interface ArticleService extends IService<Article> {
      * 分页查询博客
      * @param pageNum
      * @param pageSize
+     * @param publish
+     * @param recommend
+     * @param top
+     * @param startTime
+     * @param endTime
      * @return
      */
-    PageQuery<ArticleVO> queryPage(Integer pageNum, Integer pageSize, String title);
+    PageQuery<ArticleVO> queryPage(Integer pageNum, Integer pageSize, String title, String author, Integer publish, Integer recommend, Integer top, String startTime, String endTime);
 
     /**
      * 保存博客

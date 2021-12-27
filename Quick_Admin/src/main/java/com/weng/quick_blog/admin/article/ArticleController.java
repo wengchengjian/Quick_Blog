@@ -12,10 +12,12 @@ import com.weng.quick_blog.entity.article.vo.ArticleVO;
 import com.weng.quick_blog.service.article.ArticleService;
 import com.weng.quick_blog.service.operation.RecommendService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * <p>
@@ -45,8 +47,14 @@ public class ArticleController {
     @PreAuthorize("hasPermission('/article/list','article:list')")
     public Result<PageQuery<ArticleVO>> list(@RequestParam(value = "pageNum",defaultValue ="0") Integer pageNum,
                                              @RequestParam(value = "pageSize",defaultValue ="10") Integer pageSize,
-                                             @RequestParam(value = "title",defaultValue ="") String title){
-        PageQuery<ArticleVO> pageQuery = articleService.queryPage(pageNum,pageSize,title);
+                                             @RequestParam(value = "title",defaultValue ="") String title,
+                                             @RequestParam(value = "author",defaultValue ="") String author,
+                                             @RequestParam(value = "publish",defaultValue ="-1") Integer publish,
+                                             @RequestParam(value = "recommend",defaultValue = "-1") Integer recommend,
+                                             @RequestParam(value = "top",defaultValue = "-1") Integer top,
+                                             @RequestParam(value = "startTime") String startTime,
+                                             @RequestParam(value = "endTime") String endTime){
+        PageQuery<ArticleVO> pageQuery = articleService.queryPage(pageNum,pageSize,title,author,publish,recommend,top,startTime,endTime);
         return Result.Success(pageQuery);
     }
 

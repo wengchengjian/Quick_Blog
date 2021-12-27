@@ -14,6 +14,7 @@ import com.weng.quick_blog.mapper.operation.TagLinkMapper;
 import com.weng.quick_blog.mapper.operation.TagMapper;
 import com.weng.quick_blog.service.operation.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,12 +39,16 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      * 分页查询
      * @param pageNum   当前页
      * @param pageSize  页大小
+     * @param name
+     * @param type
      * @return
      */
     @Override
-    public PageQuery<Tag> queryPage(Integer pageNum, Integer pageSize) {
+    public PageQuery<Tag> queryPage(Integer pageNum, Integer pageSize, String name, Integer type) {
         Page<Tag> page = new Page<>(pageNum,pageSize);
-        baseMapper.selectPage(page,new QueryWrapper<Tag>().lambda());
+        baseMapper.selectPage(page,new QueryWrapper<Tag>().lambda()
+                .like(StringUtils.isNotBlank(name),Tag::getName,name)
+                .eq(type!=-1,Tag::getType,type).orderByDesc(Tag::getCreateTime));
         PageQuery<Tag> pageQuery = new PageQuery<>(page);
         return pageQuery;
     }

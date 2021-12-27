@@ -94,7 +94,7 @@ public class SysRoleController {
     @PreAuthorize("hasPermission('/sys/role/update','sys:role:update')")
     public Result update(@RequestBody SysRole role){
 
-        if(role.getRoleId()==null){
+        if(role.getId()==null){
             return Result.Failure("更新的角色的id不能为空");
         }
 

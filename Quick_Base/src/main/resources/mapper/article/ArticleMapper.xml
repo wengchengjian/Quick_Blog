@@ -44,8 +44,23 @@
             <if test="title!=null and title!=''">
                 and title like concat('%',#{title},'%')
             </if>
+            <if test="author!=null and author!=''">
+                and author like concat('%',#{author},'%')
+            </if>
+            <if test="publish!=null and publish!=-1">
+                and publish =#{publish}
+            </if>
+            <if test="recommend!=null and recommend!=-1">
+                and recommend =#{recommend}
+            </if>
+            <if test="top!=null and top!=-1">
+                and top =#{top}
+            </if>
+            <if test="startTime!=null and endTime!=null">
+                and date_format(create_time,'%Y/%m/%d') between #{startTime} and #{endTime}
+            </if>
         </where>
-        order by update_time desc
+        order by create_time desc
     </select>
     <select id="queryPageCondition" resultType="com.weng.quick_blog.entity.article.vo.ArticleVO">
         select <include refid="homeArticleColumn" /> ,0 as `type` from article

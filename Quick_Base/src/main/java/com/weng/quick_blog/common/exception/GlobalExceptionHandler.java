@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.io.IOException;
+
 /**
  * <p>
  *  统一异常处理器
@@ -54,11 +56,17 @@ public class GlobalExceptionHandler {
 //    @ExceptionHandler(Exception.class)
 //    public Result handleException(Exception e){
 //        log.error("发生无法识别的异常,请处理后加入全局异常处理类,错误原因:{}",e.getMessage());
-//        return Result.Failure();
+//        return Result.Failure(e.getMessage());
 //    }
     @ExceptionHandler(BindingException.class)
     public Result handleBindingException(BindingException e){
         log.error("sql参数绑定错误,错误原因:{}",e.getMessage());
         return Result.Failure();
+    }
+
+    @ExceptionHandler(IOException.class)
+    public Result handleIOException(IOException e){
+        log.error("IO异常,错误原因:{}",e.getMessage());
+        return Result.Failure(e.getMessage());
     }
 }

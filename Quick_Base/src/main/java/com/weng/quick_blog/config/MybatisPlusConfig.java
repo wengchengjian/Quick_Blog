@@ -4,6 +4,8 @@
  */
 package com.weng.quick_blog.config;
 
+import com.baomidou.mybatisplus.core.injector.ISqlInjector;
+import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,5 +30,10 @@ public class MybatisPlusConfig {
         // 开启 count 的 join 优化,只针对部分 left join
 //        paginationInterceptor.setCountSqlParser(new JsqlParserCountOptimize(true));
         return paginationInterceptor;
+    }
+
+    @Bean
+    public ISqlInjector sqlInjector(){
+        return new LogicSqlInjector();
     }
 }

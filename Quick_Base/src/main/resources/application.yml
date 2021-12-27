@@ -44,3 +44,12 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     #不开启二级缓存
     cache-enabled: false
+file:
+  upload:
+    path: F:\repository\Quick_Blog\resource\
+    allowTypes:
+      - image/png
+      - image/jpg
+      - image/jpeg
+      - image/bmp
+      - image/webp

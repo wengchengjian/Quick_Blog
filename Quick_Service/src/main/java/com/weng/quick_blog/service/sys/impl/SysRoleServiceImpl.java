@@ -139,7 +139,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public Integer findByRoleName(String authority) {
         return baseMapper.selectOne(new QueryWrapper<SysRole>().lambda()
-                .eq(StringUtils.isNotBlank(authority),SysRole::getRoleName,authority)).getRoleId();
+                .eq(StringUtils.isNotBlank(authority),SysRole::getRoleName,authority)).getId();
     }
 
     @Override
@@ -164,7 +164,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         List<SysRolePerm> collect = permList.stream().map(perm -> {
             SysPerm byName = sysPermService.findByName(perm);
-            return new SysRolePerm(role.getRoleId(),byName.getId());
+            return new SysRolePerm(role.getId(),byName.getId());
         }).collect(Collectors.toList());
 
         // 重复的权限直接覆盖
@@ -189,7 +189,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public void updateRole(SysRole role) {
         // TODO 参数应重新定一个class接受，项目最后优化时更改
         SysRole sysRole = new SysRole();
-        sysRole.setRoleId(role.getRoleId());
+        sysRole.setId(role.getId());
         sysRole.setRoleName(role.getRoleName());
         sysRole.setRemark(role.getRemark());
         //更新角色
@@ -197,7 +197,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
 
         //先删除之前的关系
-        sysRolePermService.delteByRoleId(role.getRoleId());
+        sysRolePermService.delteByRoleId(role.getId());
 
         //更新权限与角色的关系
         List<String> permList = role.getPermList();
@@ -207,7 +207,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .filter(perm -> sysPermService.findByName(perm)!=null)
                 .map(perm -> {
                     SysPerm byName = sysPermService.findByName(perm);
-                    return new SysRolePerm(role.getRoleId(),byName.getId());
+                    return new SysRolePerm(role.getId(),byName.getId());
                 })
                 .collect(Collectors.toList());
 

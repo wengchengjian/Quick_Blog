@@ -23,9 +23,11 @@ public interface TagService extends IService<Tag> {
      * 分页查询
      * @param pageNum   当前页
      * @param pageSize  页大小
+     * @param name
+     * @param type
      * @return
      */
-    PageQuery<Tag> queryPage(Integer pageNum,Integer pageSize);
+    PageQuery<Tag> queryPage(Integer pageNum, Integer pageSize, String name, Integer type);
 
     /**
      * 通过关联id获取列表

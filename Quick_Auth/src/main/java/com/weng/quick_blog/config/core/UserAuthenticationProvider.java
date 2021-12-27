@@ -54,7 +54,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("密码不正确");
         }
         // TODO 替换常量
-        if(userInfo.getStatus().equals("PROHIBIT")){
+        if(userInfo.getLocked().equals("PROHIBIT")){
             throw new LockedException("用户已被冻结");
         }
 

@@ -44,8 +44,10 @@ public class TagController {
     @GetMapping("/list")
     @PreAuthorize("hasPermission('/operation/tag/list','operation:tag:list')")
     public Result<PageQuery<Tag>> list(@RequestParam(value="pageNum",defaultValue="0") Integer pageNum,
-                                       @RequestParam(value="pageSize",defaultValue = "10") Integer pageSize){
-        PageQuery<Tag> pageQuery = tagService.queryPage(pageNum, pageSize);
+                                       @RequestParam(value="pageSize",defaultValue = "10") Integer pageSize,
+                                       @RequestParam(value="name",defaultValue="") String name,
+                                       @RequestParam(value="type",defaultValue="-1") Integer type){
+        PageQuery<Tag> pageQuery = tagService.queryPage(pageNum, pageSize,name,type);
         return Result.Success(pageQuery);
     }
 

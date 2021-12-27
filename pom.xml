@@ -38,6 +38,7 @@
         <spring.jwt.version>1.0.9.RELEASE</spring.jwt.version>
         <druid.version>1.1.10</druid.version>
         <jjwt.version>0.9.0</jjwt.version>
+        <p6spy.version>3.9.1</p6spy.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -128,6 +129,14 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/p6spy/p6spy -->
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+
+<!--            处理文件上传-->
 
         </dependencies>
     </dependencyManagement>

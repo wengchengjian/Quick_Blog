@@ -83,7 +83,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenu> res = new ArrayList<>();
         while(currentId!=0){
             SysMenu sysMenu = baseMapper.selectOne(
-                    new QueryWrapper<SysMenu>().lambda().eq(currentId != null, SysMenu::getMenuId, currentId));
+                    new QueryWrapper<SysMenu>().lambda().eq(currentId != null, SysMenu::getId, currentId));
             currentId = sysMenu.getParentId();
             res.add(sysMenu);
         }

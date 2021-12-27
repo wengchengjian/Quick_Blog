@@ -74,7 +74,7 @@ public class SafeUserDetailsServiceImpl implements SafeUserDetailsService {
         Set<SysPerm> permissions = new HashSet<>();
 
         // 查询用户所具有的角色id列表
-        List<Integer> roleIds = sysUserRoleService.queryRoleIdList(userInfo.getUserId());
+        List<Integer> roleIds = sysUserRoleService.queryRoleIdList(userInfo.getId());
 
         Optional.ofNullable(roleIds).ifPresent(roleIdList->{
             roleIdList.forEach(roleId->{

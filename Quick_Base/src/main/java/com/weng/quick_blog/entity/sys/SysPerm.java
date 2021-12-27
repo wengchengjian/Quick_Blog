@@ -7,6 +7,7 @@ package com.weng.quick_blog.entity.sys;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.weng.quick_blog.common.base.BaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,12 +21,10 @@ import java.io.Serializable;
  */
 @Data
 @TableName("sys_perm")
-public class SysPerm implements Serializable {
+public class SysPerm extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
-    private Integer id;
 
     @TableField("name")
     private String name;

@@ -51,16 +51,16 @@ public class Article extends BaseEntity implements Serializable {
     private Integer coverType;
 
     @ApiModelProperty(value = "是否推荐文章")
-    private Boolean recommend;
+    private Integer recommend;
 
     @ApiModelProperty(value = "分类类别")
     private String categoryId;
 
     @ApiModelProperty(value = "发布状态")
-    private Boolean publish;
+    private Integer publish;
 
     @ApiModelProperty(value = "是否置顶")
-    private Boolean top;
+    private Integer top;
 
     @ApiModelProperty(value = "格式化后的内容")
     private String contentFormat;

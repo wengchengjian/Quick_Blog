@@ -32,7 +32,7 @@ public class JWTokenUtils {
      */
     public  final String generateToken(SafeUserDetails user){
         return Jwts.builder()
-                            .setId(user.getUserId()+"")
+                            .setId(user.getId()+"")
                             .setSubject(user.getUsername())
                             //设置签发时间
                             .setIssuedAt(new Date())

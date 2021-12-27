@@ -72,7 +72,7 @@ public class JWTAuthenticationTokenFilter extends BasicAuthenticationFilter {
                     SafeUserDetails user = (SafeUserDetails) safeUserDetailsService.loadUserByUsername(username);
 
                     UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(user,user.getUserId(),user.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(user,user.getId(),user.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }

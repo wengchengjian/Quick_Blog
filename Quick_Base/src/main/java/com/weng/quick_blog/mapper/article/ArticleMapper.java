@@ -25,9 +25,17 @@ public interface ArticleMapper extends BaseMapper<Article> {
     /**
      * 查询列表
      * @param page
+     * @param author
+     * @param publish
+     * @param recommend
+     * @param top
+     * @param startTime
+     * @param endTime
      * @return
      */
-    List<ArticleVO> listArticleVO(Page<ArticleVO> page,@Param("title") String title);
+    List<ArticleVO> listArticleVO(Page<ArticleVO> page, @Param("title") String title,
+                                  String author, Integer publish, Integer recommend,
+                                  Integer top, String startTime, String endTime);
 
     /**
      * 根据条件分页

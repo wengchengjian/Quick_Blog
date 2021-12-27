@@ -7,6 +7,7 @@ package com.weng.quick_blog.entity.sys;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.weng.quick_blog.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,11 +24,8 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "SysMenu对象" ,description = "菜单管理")
-public class SysMenu implements Serializable {
+public class SysMenu extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    @TableId(value = "menu_id", type = IdType.AUTO)
-    private Integer menuId;
 
     @ApiModelProperty(value = "父菜单ID，一级菜单为0")
     private Integer parentId;
@@ -41,24 +39,13 @@ public class SysMenu implements Serializable {
     @ApiModelProperty(value = "iconfont图标")
     private String icon;
 
-
-
     @ApiModelProperty(value = "类型   0：目录   1：菜单 ")
     private Integer type;
-
 
     /**
      * 父菜单名称
      */
     @TableField(exist=false)
     private String parentName;
-    /**
-     * z-tree属性
-     */
-    @TableField(exist=false)
-    private Boolean open;
 
-
-    @TableField(exist=false)
-    private List<?> list;
 }

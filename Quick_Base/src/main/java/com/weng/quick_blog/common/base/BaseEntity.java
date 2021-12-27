@@ -4,10 +4,7 @@
  */
 package com.weng.quick_blog.common.base;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -34,4 +31,8 @@ public class BaseEntity {
     @ApiModelProperty(value="更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
+
+    @TableLogic
+    @ApiModelProperty(value="逻辑删除")
+    private Integer deleted;
 }

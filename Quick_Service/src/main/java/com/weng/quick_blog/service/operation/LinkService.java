@@ -5,6 +5,7 @@
 package com.weng.quick_blog.service.operation;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.weng.quick_blog.common.request.QueryLinkListRequest;
 import com.weng.quick_blog.common.util.PageQuery;
 import com.weng.quick_blog.entity.operation.Link;
 
@@ -23,5 +24,5 @@ public interface LinkService extends IService<Link> {
      * @title 链接名称
      * @return
      */
-    PageQuery<Link> queryPage(Integer pageNum, Integer pageSize, String title);
+    PageQuery<Link> queryPage(QueryLinkListRequest request);
 }

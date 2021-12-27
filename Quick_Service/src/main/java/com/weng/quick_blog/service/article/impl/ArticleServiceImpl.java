@@ -43,10 +43,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private TagService tagService;
 
     @Override
-    public PageQuery<ArticleVO> queryPage(Integer pageNum, Integer pageSize,String title) {
+    public PageQuery<ArticleVO> queryPage(Integer pageNum, Integer pageSize, String title, String author, Integer publish, Integer recommend, Integer top, String startTime, String endTime) {
         Page<ArticleVO> page = new Page<>(pageNum,pageSize);
 
-        List<ArticleVO> articleList = baseMapper.listArticleVO(page,title);
+        List<ArticleVO> articleList = baseMapper.listArticleVO(page,title,author,publish,recommend,top,startTime,endTime);
 
         Optional.ofNullable(articleList).ifPresent((articleVOS -> {
             articleVOS.forEach(articleVO -> {

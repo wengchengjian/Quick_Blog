@@ -5,6 +5,7 @@
 package com.weng.quick_blog.entity.operation;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.weng.quick_blog.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,12 +22,9 @@ import java.io.Serializable;
 @Data
 @TableName("tag")
 @ApiModel(value="Tag对象",description="标签")
-public class Tag implements Serializable {
+public class Tag extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty("主键")
-    private Integer id;
-
+    
     @ApiModelProperty("标签名字")
     private String name;
 
